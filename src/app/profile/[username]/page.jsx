@@ -93,7 +93,7 @@ async function ProfilePage({ params }) {
               </div>
             </div>
           </div>
-          <Feed />
+          <Feed username={userData.username} />
         </div>
       </div>
 

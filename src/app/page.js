@@ -1,10 +1,11 @@
+import { auth } from "@clerk/nextjs/server";
 import AddPost from "../components/AddPost";
 import Feed from "../components/feed/Feed";
 import LeftMenu from "../components/leftMenu/LeftMenu";
 import RightMenu from "../components/rightMenu/RightMenu";
 import Stories from "../components/Stories";
 
-function HomePage() {
+async function HomePage() {
   return (
     <div className="flex gap-6 pt-6">
       {/*......LEFT...... */}

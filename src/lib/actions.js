@@ -210,4 +210,66 @@ export async function updateProfile(prevState, payload) {
   }
 }
 
+export async function switchLike(postId) {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) {
+    throw new Error("User is not authenticated");
+  }
+  try {
+    const existingLike = await prisma.like.findFirst({
+      where: {
+        userId: currentUserId,
+        postId: postId,
+      },
+    });
+
+    if (existingLike) {
+      await prisma.like.delete({
+        where: {
+          id: existingLike.id,
+        },
+      });
+    } else {
+      await prisma.like.create({
+        data: {
+          userId: currentUserId,
+          postId: postId,
+        },
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error("Something went wrong");
+  }
+}
+
+export async function createComment(postId, desc) {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) {
+    throw new Error("User is not authenticated");
+  }
+
+  console.log("entered is " + desc);
+
+  try {
+    const createdComment = await prisma.comment.create({
+      data: {
+        desc: desc,
+        userId: currentUserId,
+        postId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return createdComment;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Something went wrong");
+  }
+}
+
 export { switchFollow, switchBlock, acceptFollowRequest, declineFollowRequest };
