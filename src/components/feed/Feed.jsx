@@ -45,11 +45,12 @@ async function Feed({ username = null }) {
     // console.log(following);
 
     const followingIds = following.map((f) => f.followingId);
+    const ids = [userId, ...followingIds]; //so that u can fetch post of current user and their friends
 
     posts = await prisma.post.findMany({
       where: {
         userId: {
-          in: followingIds,
+          in: ids,
         },
       },
       include: {
@@ -70,7 +71,7 @@ async function Feed({ username = null }) {
       },
     });
 
-    console.log(posts);
+    // console.log(posts);
   }
 
   return (

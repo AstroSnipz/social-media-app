@@ -3,7 +3,7 @@ import CommentList from "./CommentList";
 
 async function Comments({ postId }) {
   const { userId } = auth();
-  console.log(userId);
+  // console.log(userId);
 
   const currentUserDetails = await prisma.user.findFirst({
     where: {

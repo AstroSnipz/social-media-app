@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 import z from "zod";
 
 async function switchFollow(userId) {
@@ -87,7 +88,7 @@ async function switchBlock(userId) {
 }
 
 async function acceptFollowRequest(userId) {
-  console.log(userId);
+  // console.log(userId);
   const { userId: currentUserId } = auth();
 
   if (!currentUserId) {
@@ -154,7 +155,7 @@ export async function updateProfile(prevState, payload) {
   const { formData, cover } = payload;
 
   const feilds = Object.fromEntries(formData); // Convert formData to object for easy access
-  console.log(feilds);
+  // console.log(feilds);
 
   const Profile = z.object({
     cover: z.string().optional(),
@@ -251,8 +252,6 @@ export async function createComment(postId, desc) {
     throw new Error("User is not authenticated");
   }
 
-  console.log("entered is " + desc);
-
   try {
     const createdComment = await prisma.comment.create({
       data: {
@@ -268,6 +267,49 @@ export async function createComment(postId, desc) {
     return createdComment;
   } catch (error) {
     console.error(error);
+    throw new Error("Something went wrong");
+  }
+}
+
+export async function addPost(prevstate, payload) {
+  const { formData, img } = payload;
+  const { success, error } = prevstate;
+
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User is not authenticated");
+    return { success: false, error: true };
+  }
+
+  // console.log(formData);
+  // console.log(img);
+
+  const desc = formData.get("desc");
+  // console.log(desc);
+
+  const Desc = z.string().min(1).max(255);
+
+  const validatedDesc = Desc.safeParse(desc);
+
+  if (!validatedDesc.success) {
+    throw new Error("Description is required");
+    return { success: false, error: true };
+  }
+
+  try {
+    await prisma.post.create({
+      data: {
+        desc: validatedDesc.data,
+        userId,
+        img,
+      },
+    });
+
+    revalidatePath("/");
+    return { success: true, error: false };
+  } catch (err) {
+    console.error(err);
     throw new Error("Something went wrong");
   }
 }
