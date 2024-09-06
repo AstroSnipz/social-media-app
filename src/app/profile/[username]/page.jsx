@@ -4,6 +4,7 @@ import RightMenu from "../../../components/rightMenu/RightMenu";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/client";
 
 async function ProfilePage({ params }) {
   console.log(params);
