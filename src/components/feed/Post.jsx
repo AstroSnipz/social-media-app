@@ -1,9 +1,14 @@
 import Image from "next/image";
 import Comments from "./Comments";
 import PostInteraction from "./PostInteraction";
+import { Suspense } from "react";
+import PostInfo from "./PostInfo";
+import { auth } from "@clerk/nextjs/server";
 
 async function Post({ post }) {
   // console.log(posts);
+
+  const { userId } = auth();
 
   return (
     <div className="flex flex-col gap-4">
@@ -23,7 +28,7 @@ async function Post({ post }) {
               : post.user.username}
           </span>
         </div>
-        <Image src="/more.png" width={16} height={16} alt="" />
+        {userId === post.user.id && <PostInfo postId={post.id} />}
       </div>
       {/*.....DESC...... */}
       <div className="flex flex-col gap-4">
@@ -41,13 +46,16 @@ async function Post({ post }) {
         <p>{post.desc}</p>
       </div>
       {/*.....INTERACTION...... */}
-      <PostInteraction
-        postId={post.id}
-        likes={post.likes.map((like) => like.userId)}
-        commentNo={post._count.comments}
-      />
 
-      <Comments postId={post.id} />
+      <Suspense fallback={"Loading...."}>
+        <PostInteraction
+          postId={post.id}
+          likes={post.likes.map((like) => like.userId)}
+          commentNo={post._count.comments}
+        />
+
+        <Comments postId={post.id} />
+      </Suspense>
     </div>
   );
 }

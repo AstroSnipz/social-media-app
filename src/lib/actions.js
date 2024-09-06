@@ -314,4 +314,67 @@ export async function addPost(prevstate, payload) {
   }
 }
 
+export async function addStory(img) {
+  console.log(img);
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User is not authenticated");
+  }
+
+  try {
+    const existingStory = await prisma.story.findFirst({
+      where: {
+        userId,
+      },
+    });
+
+    if (existingStory) {
+      await prisma.story.delete({
+        where: {
+          id: existingStory.id,
+        },
+      });
+    }
+
+    const createdStory = await prisma.story.create({
+      data: {
+        userId,
+        img: img.secure_url,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return createdStory;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Something went wrong");
+  }
+}
+
+export async function deletePost(postId) {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) {
+    throw new Error("User is not authenticated");
+  }
+
+  try {
+    await prisma.post.delete({
+      where: {
+        userId: currentUserId,
+        id: postId,
+      },
+    });
+
+    revalidatePath("/");
+  } catch (error) {
+    console.error(error);
+    throw new Error("Something went wrong");
+  }
+}
+
 export { switchFollow, switchBlock, acceptFollowRequest, declineFollowRequest };
