@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import FriendRequestList from "./FriendRequestList";
+import prisma from "@/lib/client";
 
 async function FriendRequest() {
   const { userId: currentUserId } = auth();

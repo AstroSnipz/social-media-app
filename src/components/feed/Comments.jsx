@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import CommentList from "./CommentList";
+import prisma from "@/lib/client";
 
 async function Comments({ postId }) {
   const { userId } = auth();

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import UserInfoCardInteraction from "./UserInfoCardInteraction";
 import UpdateUser from "./UpdateUser";
+import prisma from "@/lib/client";
 
 async function UserInfoCard({ user }) {
   const createdAtDate = new Date(user.createdAt);

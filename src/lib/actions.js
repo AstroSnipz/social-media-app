@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import z from "zod";
+import prisma from "./client";
 
 async function switchFollow(userId) {
   const { userId: currentUserId } = auth();

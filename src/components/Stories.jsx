@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import StoryList from "./StoryList";
+import prisma from "@/lib/client";
 
 async function Stories() {
   const { userId: currentUserId } = auth();
