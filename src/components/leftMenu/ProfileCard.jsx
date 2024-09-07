@@ -1,10 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import prisma from "../../lib/client";
+import Link from "next/link";
 
 async function ProfileCard() {
   const { userId } = auth();
-
   const userData = await prisma.user.findFirst({
     where: {
       id: userId,
@@ -68,9 +68,11 @@ async function ProfileCard() {
             {userData._count.followers} followers
           </span>
         </div>
-        <button className="bg-blue-500 text-xs text-white p-2 rounded-md">
-          My Profile
-        </button>
+        <Link href={`/profile/${userData.username}`}>
+          <button className="bg-blue-500 text-xs text-white p-2 rounded-md">
+            My Profile
+          </button>
+        </Link>
       </div>
     </div>
   );
